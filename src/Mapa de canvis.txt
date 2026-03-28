@@ -1,0 +1,108 @@
+Canvis realitzats a main.cpp i mapa del arxiu: * = essencial
+
+
+INICI I DIBUIX------------------------------------------------------------------
+InitGl():*
+Carrega les variables creades al main.h i les inicialitza amb valors per defecte. Permet assigna configuració inicial. No tocat. Pendent de decidir valors inicials.
+
+InitAPI():*
+Inicialitza les extensions. Útil per veure algunes funcions. No tocat.
+
+GetGLVersion():
+Obté la versió d'openGL. Eliminada junt amb la contextualització de la versió del entorn d'openGL i del debug del main.
+
+onSize():*
+Detecta quan es canvia l'escala de la finestra i la reescala. No tocat.
+
+OnPaint():*
+El cor del bucle de renderitzat. Eliminades totes les cameres menys la perspectiva esferica. Molt simplificada. Dibuixat dels eixos mogut a la funció main.
+
+Configura_Escena():*
+Funcio que configura els parametres de Model i dibuixa les primitives OpenGL dins classe Model. No tocat.
+
+dibuixa_Escena():*
+Funcio que crida al dibuix dels diferents elements de l'escena. No tocat.
+
+Barra_Estat():
+Actualitza la barra d'estat (Status Bar) de l'aplicació en la consola amb els valors R,A,B,PVx,PVy,PVz en Visualització Interactiva. Eliminada.
+
+IMGUI MAIN ------------------------------------------------------------------
+draw_Menu_ImGui(): TEMP
+Dibuixa el menú inicial. Lleugerament simplificada.
+
+MostraEntornVGIWindow(bool* p_open): TEMP
+Funció que mostra el menú principal de l'Entorn VGI amb els seus desplegables.
+
+void ShowArxiusOptions(): TEMP
+Funció que mostra els menús popUp "Arxius" per a obrir fitxers i el pop Up "About". Lleugremanet simplificada.
+
+void ShowAboutWindow():
+Funció que mostra la finestra "About" de l'aplicació. Eliminada.
+
+shortCut_Camera(), shortCut_Polars() ... shortCut_Shader():
+6 funcions que retornen variables si son modificades pel teclat. Eliminades.
+
+ShowEntornVGIWindow(): TEMP
+La finestra del entorn. Permet ajustar els desplegables i els valors de la finestra del entorn de prova. Simplificada i modificada.
+
+void OnArxiuObrirFractal(), OnArxiuObrirFitxerObj() ... OnArxiuObrirSkybox():
+Funcions per càrregar arxius com ara la llum o les skybox. No tocades.
+
+CAMERA-----------------------------------------------------------------------
+OnCameraEsferica(), OnCameraEsfericaOrigen():
+Ajusta la camara per defecte. Fusionades.
+
+OnVistaMobil():
+Toggle mobilitat camara. Netejat.
+
+void OnVistaZoom():
+Toggle zoom camara. Netejat.
+
+OnVistaZoomOrto():
+Toggle camara ortogonal. Eliminada.
+
+OnVistaSatelit():
+Toggle camara satèlti. Netejat.
+
+OnVistaPolarsX() ... OnVistaPolarsZ():
+Restableix les polars de la camara. Eliminades.
+
+OnCameraNavega():
+Estableix el mode navegació de la camara. Eliminada.
+
+OnCameraOrigenNavega():
+Torna al origen amb la camara amb mode navegació. Eliminada.
+
+OnCameraGeode():
+Estableix el mode geòde de la camara. Eliminada.
+
+OnCameraOrigenGeode():
+Torna al origen amb la camara amb mode geòde. Eliminada.
+
+PANTALLA-------------------------------------------------------------------
+OnVistaFullscreen():
+En teoria feia de toggle de la pantalla completa, però no feia res. Eliminada.
+
+OnVistaPan(), OnVistaOrigenPan():
+Gestió Pan. Eliminades.
+
+OnVistaEixos():
+Toggle eixos. No tocat.
+
+OnVistaSkyBox():
+Carrega skybox per defecte. Lleugerament simplificat.
+
+PROJECCIÓ-------------------------------------------------------------------
+Totes les funcions eliminades.
+
+OBJECTES--------------------------------------------------------------------
+Totes les funcions netejades.
+
+TRANSFORMACIONS-------------------------------------------------------------
+Totes les funcions eliminades.
+
+OCULTACIONS-----------------------------------------------------------------
+Toggles d'ocultacions. Totes les funcions netejades.
+
+
+

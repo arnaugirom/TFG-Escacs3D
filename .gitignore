@@ -1,0 +1,73 @@
+# 1. Ignorar TODO por defecto
+*
+
+# 2. Re-incluir (NO ignorar) los archivos y carpetas específicos
+# El '!' anula la regla de ignorar.
+
+# --- Archivos de la Raíz ---
+!.gitignore
+!EntornVGI.sln
+!README.md
+
+# --- Carpeta del Proyecto Visual Studio ---
+# Re-incluimos la carpeta y los archivos de proyecto esenciales
+!EntornVGI/
+!EntornVGI/EntornVGI.vcxproj
+!EntornVGI/EntornVGI.vcxproj.filters
+!EntornVGI/extensions.txt
+
+# --- Código Fuente ---
+# Re-incluimos la carpeta src y todo su contenido
+!src/
+!src/**
+
+# --- Dependencias (Headers y Libs) ---
+# Re-incluimos las librerías y headers
+!include/
+!include/**
+
+!lib/
+!lib/**
+
+# --- Assets (Shaders y Texturas) ---
+# Re-incluimos las carpetas de assets que están DENTRO de EntornVGI
+!EntornVGI/shaders/
+!EntornVGI/shaders/**
+
+!EntornVGI/textures/
+!EntornVGI/textures/**
+
+!EntornVGI/modelos/
+!EntornVGI/modelos/**
+
+# 3. Volver a ignorar carpetas de compilación
+# Esto es por si aparecen dentro de carpetas que hemos re-incluido
+# (como src/x64/ o EntornVGI/x64/)
+[Dd]ebug/
+[Rr]elease/
+x64/
+.vs/
+/EntornVGI/modelos/Mapas/MAPAFINAL.obj
+
+
+
+# Build
+/build/
+/bin/
+/out/
+
+# Visual Studio / VSCode
+.vs/
+.vscode/
+
+# CMake
+CMakeFiles/
+CMakeCache.txt
+
+# Executables
+*.exe
+*.out
+
+# Object files
+*.o
+*.obj
