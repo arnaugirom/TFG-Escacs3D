@@ -26,7 +26,9 @@
 using namespace std;
 
 
-
+GameObject* peoA2;
+GameObject* cavallB1;
+GameObject* movingObject = nullptr;
 
 void placePiece(GameObject* obj, glm::vec3 pos, bool isKnight = false) {
 	obj->scale(glm::vec3(0.5f));
@@ -37,6 +39,27 @@ void placePiece(GameObject* obj, glm::vec3 pos, bool isKnight = false) {
 	}
 
 	obj->translate(pos);
+}
+
+
+bool moving = false;
+glm::vec3 startPos, targetPos;
+float moveSpeed = 2.0f; // ajusta velocitat
+float moveProgress = 0.0f;
+
+void movePieceTo(GameObject* obj, glm::vec3 newPos)
+{
+	movingObject = obj;   // 👈 guarda quin objecte es mou
+	startPos = obj->getPos();
+	targetPos = newPos;
+	moveProgress = 0.0f;
+	moving = true;
+}
+
+void moveKnight(GameObject* knight, glm::vec3 offset)
+{
+	glm::vec3 current = knight->getPos();
+	movePieceTo(knight, current + offset);
 }
 
 
@@ -129,6 +152,7 @@ void InitGL()
 	/*                               CARGA DE MODELS                             */
 	/* ------------------------------------------------------------------------- */
 
+
 	
 
 	mm = modelManager();
@@ -137,7 +161,17 @@ void InitGL()
 	
 	//Posar TAULELL
 	GameObject* TAULELL = createObject(mm.getTaulell());
+
 	TAULELL->rotate(glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(1, 0, 0)));
+	
+	
+
+	peoA2 = createObject(mm.getBPeo());
+	placePiece(peoA2, glm::vec3(-3.5f, -2.5f, -0.2f)); // A2
+
+	cavallB1 = createObject(mm.getBCavall());
+	placePiece(cavallB1, glm::vec3(-2.5f, -3.5f, -0.15f), true);
+
 	
 	placePiece(createObject(mm.getBTorre()), glm::vec3(3.5f, -3.5f, -0.2f)); // H1
 	placePiece(createObject(mm.getBCavall()), glm::vec3(2.5f, -3.5f, -0.2f), true);
@@ -145,10 +179,10 @@ void InitGL()
 	placePiece(createObject(mm.getBReina()), glm::vec3(0.5f, -3.5f, -0.2f));
 	placePiece(createObject(mm.getBRei()), glm::vec3(-0.5f, -3.5f, -0.2f));
 	placePiece(createObject(mm.getBAlfil()), glm::vec3(-1.5f, -3.5f, -0.2f));
-	placePiece(createObject(mm.getBCavall()), glm::vec3(-2.5f, -3.5f, -0.15f), true);
+	//placePiece(createObject(mm.getBCavall()), glm::vec3(-2.5f, -3.5f, -0.15f), true);
 	placePiece(createObject(mm.getBTorre()), glm::vec3(-3.5f, -3.5f, -0.2f));
 
-	placePiece(createObject(mm.getBPeo()), glm::vec3(-3.5f, -2.5f, -0.2f));
+	//placePiece(createObject(mm.getBPeo()), glm::vec3(-3.5f, -2.5f, -0.2f));
 	placePiece(createObject(mm.getBPeo()), glm::vec3(-2.5f, -2.5f, -0.2f));
 	placePiece(createObject(mm.getBPeo()), glm::vec3(-1.5f, -2.5f, -0.2f));
 	placePiece(createObject(mm.getBPeo()), glm::vec3(-0.5f, -2.5f, -0.2f));
@@ -181,7 +215,7 @@ void InitGL()
 	placePiece(createObject(mm.getNPeo()), glm::vec3(3.5f, 2.5f, -0.2f));
 
 
-
+	
 
 
 
@@ -631,6 +665,43 @@ void OnKeyDown(GLFWwindow* window, int key, int scancode, int action, int mods) 
 			camaraActual++;
 			break;
 		}
+
+		case GLFW_KEY_P:
+		{
+			glm::vec3 current = peoA2->getPos();
+			movePieceTo(peoA2, current + glm::vec3(0, 1.0f, 0));
+			break;
+		}
+
+		case GLFW_KEY_O:
+		{
+			glm::vec3 current = peoA2->getPos();
+			movePieceTo(peoA2, current + glm::vec3(0, 2.0f, 0));
+			break;
+		}
+
+		case GLFW_KEY_I:
+		{
+			glm::vec3 current = peoA2->getPos();
+			movePieceTo(peoA2, current + glm::vec3(1.0f, 1.0f, 0));
+			break;
+		}
+
+		case GLFW_KEY_U: // diagonal esquerra
+		{
+			glm::vec3 current = peoA2->getPos();
+			movePieceTo(peoA2, current + glm::vec3(-1.0f, 1.0f, 0));
+			break;
+		}
+
+
+		case GLFW_KEY_K:
+		{
+			moveKnight(cavallB1, glm::vec3(1.0f, 2.0f, 0.0f));
+			break;
+		}
+
+
 		default:
 			break;
 		}
@@ -639,6 +710,19 @@ void OnKeyDown(GLFWwindow* window, int key, int scancode, int action, int mods) 
 
 		mainCamara = &camaras[camaraActual];
 
+		/*
+		if (key == GLFW_KEY_P)
+		{
+			glm::vec3 current = peoA2->getPos();
+			movePieceTo(peoA2, current + glm::vec3(0, 1.0f, 0));
+		}
+
+		if (key == GLFW_KEY_O)
+		{
+			glm::vec3 current = peoA2->getPos();
+			movePieceTo(peoA2, current + glm::vec3(0, 2.0f, 0));
+		}
+		*/
 
 		if (key == GLFW_KEY_W)
 		{
@@ -1005,6 +1089,20 @@ int main(void)
 			}
 		}
 
+
+		if (moving && movingObject != nullptr)
+		{
+			moveProgress += deltaTime * moveSpeed;
+
+			if (moveProgress >= 1.0f)
+			{
+				moveProgress = 1.0f;
+				moving = false;
+			}
+
+			glm::vec3 newPos = glm::mix(startPos, targetPos, moveProgress);
+			movingObject->translate(newPos); // ✅ ara mou el correcte
+		}
 		
 
 
