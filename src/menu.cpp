@@ -179,7 +179,7 @@ void menu(bool& salir)
 		if (ImGui::Begin("Menu_Principal_Fullscreen", &show_menu_inicio, flags))
 		{
 			
-			DibujarImagen(imgTitulo, 0.5f, 0.2f, 0.2f, {});
+			//DibujarImagen(imgTitulo, 0.5f, 0.2f, 0.2f, {});
 
 			// Aplicamos estilos y fuente 
 			cambiarEstiloBotones();
@@ -272,6 +272,7 @@ void iniciarPartida(bool& salir)
 
 		ImGui::SetWindowFontScale(2.2f);
 
+		/*
 		// Icono Vida
 		DibujarImagen(imgVida, 0.9f, 0.05f, 0.23f, {
 			TextoOverlay(txtVida, 120.0f, 25.0f, ImVec4(0.0f, 0.0f, 0.0f, 1.0f))
@@ -281,7 +282,7 @@ void iniciarPartida(bool& salir)
 		DibujarImagen(imgDinero, 0.77f, 0.05f, 0.15f, {
 			TextoOverlay(txtDinero, 100.0f, 27.0f, ImVec4(0.0f, 0.0f, 0.0f, 1.0f))
 			});
-
+		*/
 		// Icono Ronda
 		DibujarImagen(imgRonda, 0.50f, 0.05f, 0.28f, {
 			TextoOverlay(txtRonda, 100.0f, 8.0f, ImVec4(0.0f, 0.0f, 0.0f, 1.0f))
