@@ -14,10 +14,11 @@
 #include <vector>
 #include <unordered_set>
 #include "modelManager.h"
+#include "board.h"
 // Entorn VGI: OBJECTE OBJ. Include per la definició de l'objecte Obj_OBJ
 
 std::vector<Enemy*> enemies;
-std::vector<GameObject*> objects;
+extern std::vector<GameObject*> objects;
 Turret* turrets[NTURRETS];
 std::vector<Path*> path;
 
@@ -63,6 +64,10 @@ glm::vec3 freeCameraPos;
 
 //Modelos
 modelManager mm;
+
+
+//Board
+Board* taulell;
 
 //Player
 Player* player;
@@ -266,7 +271,11 @@ int turretUpgradePrices[] = { 500, 1300, 2700, 999999 };
 	
 	void InitAPI();
 // Creació i destrucció d'objectes
-	GameObject* createObject(COBJModel* model);
+	
+
+	//GameObject* createObject(COBJModel* model);
+	
+	
 	Enemy* spawnEnemy(int type);
 	void destroyObject(GameObject* obj);
 // Entorn VGI: Control de l'EVENT ONSIZE
@@ -290,3 +299,5 @@ int turretUpgradePrices[] = { 500, 1300, 2700, 999999 };
 	GLenum glCheckError_(const char* file, int line);
 	void APIENTRY glDebugOutput(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length,
 		const GLchar* message, const void* userParam);
+	
+
