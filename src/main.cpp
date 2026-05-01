@@ -1,3 +1,5 @@
+//MAIN.CPP
+
 //******** PRACTICA VISUALITZACI� GR�FICA INTERACTIVA (Escola Enginyeria - UAB)
 //******** Entorn b�sic VS2022 MONOFINESTRA amb OpenGL 4.6, interf�cie GLFW 3.4, ImGui i llibreries GLM
 //******** Ferran Poveda, Marc Vivet, Carme Juli�, D�bora Gil, Enric Mart� (Setembre 2025)
@@ -23,16 +25,27 @@
 #include "menu.h"
 #include "gameObject.h"
 
+#include "vosk_api.h"
+#include <portaudio.h>
+#include <map>
+#include <string>
+#include <sstream>
+
 #include <algorithm>
 
 #include <iostream>
 using namespace std;
+
+VoskModel* model = nullptr;
+VoskRecognizer* rec = nullptr;
 
 
 GameObject* peoA2;
 GameObject* cavallB1;
 GameObject* movingObject = nullptr;
 std::vector<GameObject*> objects;
+
+
 
 
 bool moving = false;
@@ -55,7 +68,48 @@ void moveKnight(GameObject* knight, glm::vec3 offset)
 	movePieceTo(knight, current + offset);
 }
 
+std::string normalize(std::string s)
+{
+	std::transform(s.begin(), s.end(), s.begin(), ::tolower);
 
+	std::map<std::string, char> mapNums = {
+		{" u",'1'}, {"dos",'2'}, {"tres",'3'}, {"quatre",'4'},
+		{"cinc",'5'}, {"sis",'6'}, {"set",'7'}, {"vuit",'8'}
+	};
+
+	for (auto& [word, num] : mapNums)
+	{
+		size_t pos;
+		while ((pos = s.find(word)) != std::string::npos)
+		{
+			s.replace(pos, word.length(), std::string(1, num));
+		}
+	}
+
+	return s; // NO eliminar espais
+}
+
+std::string extractSquare(const std::string& word)
+{
+	std::string s = word;
+	std::transform(s.begin(), s.end(), s.begin(), ::tolower);
+
+	// elimina espais
+	s.erase(remove(s.begin(), s.end(), ' '), s.end()); // Ara queda a2
+
+	if (s.size() < 2) return "";
+
+	char col = s[0];
+	char row = s[1];
+
+	// si ve com "a2"
+	if (col >= 'a' && col <= 'h' && row >= '1' && row <= '8')
+	{
+		return std::string(1, toupper(col)) + row;
+	}
+
+	return "";
+}
 
 std::pair<int, int> parsePos(std::string pos)
 {
@@ -70,13 +124,56 @@ std::pair<int, int> parsePos(std::string pos)
 
 void processVoiceCommand(std::string command, Board* board)
 {
-	std::string from = command.substr(0, 2);
-	std::string to = command.substr(3, 2);
+	std::cout << "COMMAND RAW: " << command << std::endl;
+
+	std::stringstream ss(command);
+	std::vector<std::string> tokens;
+	std::string word;
+
+	while (ss >> word)
+		tokens.push_back(word);
+
+	if (tokens.size() < 4)
+	{
+		std::cout << "Comanda incompleta" << std::endl;
+		return;
+	}
+
+	// busquem patrons: a X a Y
+	std::string from = "";
+	std::string to = "";
+
+	for (int i = 0; i < tokens.size() - 1; i++)
+	{
+		if (tokens[i] == "a")
+		{
+			if (from == "")
+				from = tokens[i] + " " + tokens[i + 1]; //Aixo fa que quedi a 2
+			else
+				to = tokens[i] + " " + tokens[i + 1]; //to = a 3
+		}
+	}
+
+	from = extractSquare(from); // from = a2
+	to = extractSquare(to); // to = a3
+
+	if (from == "" || to == "")
+	{
+		std::cout << "Comanda no reconeguda" << std::endl;
+		return;
+	}
+
+	std::cout << "FROM: " << from << " TO: " << to << std::endl;
 
 	auto [x1, y1] = parsePos(from);
 	auto [x2, y2] = parsePos(to);
 
 	Piece* p = board->get(x1, y1);
+
+	std::cout << "DEBUG board get(" << x1 << "," << y1 << ")" << std::endl;
+	auto cell = board->getCell(x1, y1);
+	std::cout << "CELL OBJ: " << cell.obj << std::endl;
+	std::cout << "P ES AQUESTA PESA: " << p << std::endl;
 
 	if (!p)
 	{
@@ -84,18 +181,10 @@ void processVoiceCommand(std::string command, Board* board)
 		return;
 	}
 
-	std::cout << "Pesa seleccionada a " << from << std::endl;
-
-
-	std::cout << "DEBUG: procesando comando " << command << std::endl;
-	std::cout << "DEBUG: pieza en " << from << " = " << p << std::endl;
-
-
-	// VALIDAR MOVIMENT
 	std::vector<std::pair<int, int>> moves = p->getMoves();
 
 	bool valid = false;
-	for (auto m : moves)
+	for (auto& m : moves)
 	{
 		if (m.first == x2 && m.second == y2)
 		{
@@ -106,34 +195,20 @@ void processVoiceCommand(std::string command, Board* board)
 
 	if (!valid)
 	{
-		std::cout << "Moviment invalid!" << std::endl;
+		std::cout << "Moviment invalid" << std::endl;
 		return;
 	}
 
-	std::cout << "Moviment valid! Executant..." << std::endl;
-
-	// TROBAR OBJECTE VISUAL
 	GameObject* obj = board->getCell(x1, y1).obj;
 
-	if (!obj)
-	{
-		std::cout << "Error: no GameObject" << std::endl;
-		return;
-	}
+	std::cout << "OBJ PER MOURE: " << obj << std::endl;
 
-	// POSICIÓ VISUAL (mateix sistema que uses a Inicialitza_Taulell)
-	/*glm::vec3 newPos = glm::vec3(
-		-3.5f + x2,
-		-2.5f,        // IMPORTANT: mateix Y que peons inicials
-		-0.2f
-	);
-	*/
-	glm::vec3 current = obj->getPos();
-	movePieceTo(obj, current + glm::vec3(0, 1.0f, 0));
+	if (!obj) return;
 
-	//movePieceTo(obj, newPos);
+	glm::vec3 newPos = glm::vec3(-3.5f, -2.5f + (y2-1), -0.2f);
+	std::cout << "AIXO ES Y2: " << y2 << std::endl;
 
-	// ACTUALITZAR BOARD LÒGIC
+	movePieceTo(obj, newPos);
 	board->movePiece(p, x2, y2);
 }
 
@@ -1014,6 +1089,40 @@ int main(void)
 	float now;
 	float delta;
 
+
+	//VOSK
+	model = vosk_model_new(
+		"C:\\Users\\uanra\\Desktop\\VGI GRUP altre joc\\Tower-Defense-master\\x64\\Release\\model"
+	);
+
+	if (!model) {
+		std::cout << "Error carregant model" << std::endl;
+		return -1;
+	}
+
+	rec = vosk_recognizer_new(model, 16000.0);
+
+	std::cout << "Vosk funciona!" << std::endl;
+
+
+	//PORT AUDIO
+	Pa_Initialize();
+	PaStream* stream;
+	Pa_OpenDefaultStream(
+		&stream,
+		1,          // input channels
+		0,          // output channels
+		paInt16,
+		16000,
+		256,
+		nullptr,
+		nullptr
+	);
+
+	Pa_StartStream(stream);
+
+
+
 	// glfw: initialize and configure
 	// ------------------------------
 	if (!glfwInit())
@@ -1142,10 +1251,94 @@ int main(void)
 	glEnable(GL_DEPTH_TEST);
 	bool salir = false;
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	//Inicailiza las imagenes usadas
 	InicializarGestorImagenes();
     while (!glfwWindowShouldClose(window) and !salir)
     {  
+		//AUDIO
+		int16_t buffer[512];
+
+		Pa_ReadStream(stream, buffer, 512);
+
+		bool final = vosk_recognizer_accept_waveform(rec, (const char*)buffer, sizeof(buffer));
+
+		const char* result = nullptr;
+		const char* partial = nullptr;
+
+		if (final)
+		{
+			const char* result = vosk_recognizer_result(rec);
+			std::string json(result);
+
+			std::cout << "VOSK FINAL: " << json << std::endl;
+
+			size_t pos = json.find("\"text\"");
+			if (pos != std::string::npos)
+			{
+				size_t start = json.find("\"", pos + 6) + 1;
+				size_t end = json.find("\"", start);
+
+				std::string command = json.substr(start, end - start);
+
+				if (!command.empty())
+				{
+					command = normalize(command);
+					processVoiceCommand(command, taulell);
+				}
+			}
+		}
+		else
+		{
+			const char* partial = vosk_recognizer_partial_result(rec);
+			std::cout << "PARTIAL: " << partial << std::endl;
+		}
+		
+
+		
+		if (result)
+		{
+			std::string json(result);
+			std::cout << "VOSK: " << json << std::endl;
+
+			size_t pos = json.find("\"partial\"");
+
+			if (pos != std::string::npos)
+			{
+				size_t start = json.find("\"", pos + 9);
+				if (start != std::string::npos)
+				{
+					start++;
+					size_t end = json.find("\"", start);
+
+					if (end != std::string::npos)
+					{
+						std::string command = json.substr(start, end - start);
+
+						if (!command.empty())
+						{
+							std::cout << "COMMAND: " << command << std::endl;
+							command = normalize(command);
+							processVoiceCommand(command, taulell);
+						}
+					}
+				}
+			}
+		}
 
 	
 		// Poll for and process events
@@ -1169,6 +1362,10 @@ int main(void)
 
 		// Draws the UI
 		menu(salir);
+
+
+		
+
 
 		// CONTROL DE ACTUALIZACIÓN (UPDATE)
 		// Se actualiza si:

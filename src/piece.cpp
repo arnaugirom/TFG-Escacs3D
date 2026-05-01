@@ -1,3 +1,4 @@
+//PIECE.CPP
 #include "piece.h"
 
 Piece::Piece(int x, int y, Color color) : x(x), y(y), color(color) {}
