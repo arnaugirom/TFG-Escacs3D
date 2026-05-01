@@ -1,5 +1,6 @@
 #pragma once
 #include "modelManager.h"
+#include <iostream>
 
 class GameObject
 {
@@ -19,6 +20,9 @@ public:
 	glm::mat4 getNormalMatrix();
 	void setPOID(int id) { pickingID = id; }
 
+
+	
+
 	void dibuixarObjecte(GLuint shaderID);
 
 protected:
@@ -37,3 +41,6 @@ private:
 	int pickingID;
 	GameObject* m_parent = nullptr;
 };
+
+GameObject* createObject(COBJModel* model);
+void placePiece(GameObject* obj, glm::vec3 pos, bool isKnight = false);

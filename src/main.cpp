@@ -21,6 +21,9 @@
 #include "escena.h"
 #include "main.h"
 #include "menu.h"
+#include "gameObject.h"
+
+#include <algorithm>
 
 #include <iostream>
 using namespace std;
@@ -29,17 +32,7 @@ using namespace std;
 GameObject* peoA2;
 GameObject* cavallB1;
 GameObject* movingObject = nullptr;
-
-void placePiece(GameObject* obj, glm::vec3 pos, bool isKnight = false) {
-	obj->scale(glm::vec3(0.5f));
-	obj->rotate(glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(1, 0, 0)));
-
-	if (isKnight) {
-		obj->rotate(glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(0, 1, 0)));
-	}
-
-	obj->translate(pos);
-}
+std::vector<GameObject*> objects;
 
 
 bool moving = false;
@@ -49,7 +42,7 @@ float moveProgress = 0.0f;
 
 void movePieceTo(GameObject* obj, glm::vec3 newPos)
 {
-	movingObject = obj;   // 👈 guarda quin objecte es mou
+	movingObject = obj;   // guarda quin objecte es mou
 	startPos = obj->getPos();
 	targetPos = newPos;
 	moveProgress = 0.0f;
@@ -61,6 +54,96 @@ void moveKnight(GameObject* knight, glm::vec3 offset)
 	glm::vec3 current = knight->getPos();
 	movePieceTo(knight, current + offset);
 }
+
+
+
+std::pair<int, int> parsePos(std::string pos)
+{
+	char col = pos[0];   // A
+	char row = pos[1];   // 2
+
+	int x = col - 'A';
+	int y = (row - '1');
+
+	return { x, y };
+}
+
+void processVoiceCommand(std::string command, Board* board)
+{
+	std::string from = command.substr(0, 2);
+	std::string to = command.substr(3, 2);
+
+	auto [x1, y1] = parsePos(from);
+	auto [x2, y2] = parsePos(to);
+
+	Piece* p = board->get(x1, y1);
+
+	if (!p)
+	{
+		std::cout << "No hi ha pesa a " << from << std::endl;
+		return;
+	}
+
+	std::cout << "Pesa seleccionada a " << from << std::endl;
+
+
+	std::cout << "DEBUG: procesando comando " << command << std::endl;
+	std::cout << "DEBUG: pieza en " << from << " = " << p << std::endl;
+
+
+	// VALIDAR MOVIMENT
+	std::vector<std::pair<int, int>> moves = p->getMoves();
+
+	bool valid = false;
+	for (auto m : moves)
+	{
+		if (m.first == x2 && m.second == y2)
+		{
+			valid = true;
+			break;
+		}
+	}
+
+	if (!valid)
+	{
+		std::cout << "Moviment invalid!" << std::endl;
+		return;
+	}
+
+	std::cout << "Moviment valid! Executant..." << std::endl;
+
+	// TROBAR OBJECTE VISUAL
+	GameObject* obj = board->getCell(x1, y1).obj;
+
+	if (!obj)
+	{
+		std::cout << "Error: no GameObject" << std::endl;
+		return;
+	}
+
+	// POSICIÓ VISUAL (mateix sistema que uses a Inicialitza_Taulell)
+	/*glm::vec3 newPos = glm::vec3(
+		-3.5f + x2,
+		-2.5f,        // IMPORTANT: mateix Y que peons inicials
+		-0.2f
+	);
+	*/
+	glm::vec3 current = obj->getPos();
+	movePieceTo(obj, current + glm::vec3(0, 1.0f, 0));
+
+	//movePieceTo(obj, newPos);
+
+	// ACTUALITZAR BOARD LÒGIC
+	board->movePiece(p, x2, y2);
+}
+
+
+
+
+
+
+
+
 
 
 void InitGL()
@@ -152,19 +235,29 @@ void InitGL()
 	/*                               CARGA DE MODELS                             */
 	/* ------------------------------------------------------------------------- */
 
-
+	
 	
 
 	mm = modelManager();
 	mm.initialSetup();
-//createObject(mm.getMapa());
-	
+
+
+	// CREAR OBJECTE TAULELL
+	taulell = new Board();
+	taulell->Inicialitza_Taulell(mm);
+
+	std::cout << "Objects size: " << objects.size() << std::endl;
+
+
+
+	/*
 	//Posar TAULELL
 	GameObject* TAULELL = createObject(mm.getTaulell());
 
 	TAULELL->rotate(glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(1, 0, 0)));
 	
 	
+
 
 	peoA2 = createObject(mm.getBPeo());
 	placePiece(peoA2, glm::vec3(-3.5f, -2.5f, -0.2f)); // A2
@@ -214,7 +307,7 @@ void InitGL()
 	placePiece(createObject(mm.getNPeo()), glm::vec3(2.5f, 2.5f, -0.2f));
 	placePiece(createObject(mm.getNPeo()), glm::vec3(3.5f, 2.5f, -0.2f));
 
-
+	*/
 	
 
 
@@ -242,8 +335,8 @@ void InitGL()
 	camaras[CAM_RIGHT].translate(glm::vec3(0, -20, 20));
 	camaras[CAM_RIGHT].target(glm::vec3(0, 0, 0));
 
-	camaras[CAM_INICIAL].translate(glm::vec3(-50.3f, 30, 9.8f));
-	camaras[CAM_INICIAL].target(glm::vec3(0, 0, 5));
+	camaras[CAM_INICIAL].translate(glm::vec3(0, 0, 15));
+	camaras[CAM_INICIAL].target(glm::vec3(0, 0, 0));
 
 	freeCameraPos = glm::vec3(0, 0, 0);
 
@@ -378,7 +471,7 @@ void finishRound()
 //Enemy* spawnEnemy(int type)
 
 //void destroyEnemies(Enemy* en)
-
+/*
 GameObject* createObject(COBJModel* model)
 {
 	GameObject* newObject = new GameObject(model);
@@ -388,7 +481,7 @@ GameObject* createObject(COBJModel* model)
 	objects.push_back(newObject);
 	return newObject;
 }
-
+*/
 //Path* createPath(glm::vec2 pos, float speedMultiplier = 1.0f, int tipo = 0)
 
 
@@ -644,7 +737,6 @@ void OnMouseMove(GLFWwindow* window, double xpos, double ypos)
 	}
 }
 
-
 void OnKeyDown(GLFWwindow* window, int key, int scancode, int action, int mods) {
 
 	ImGuiIO& io = ImGui::GetIO();
@@ -665,6 +757,10 @@ void OnKeyDown(GLFWwindow* window, int key, int scancode, int action, int mods) 
 			camaraActual++;
 			break;
 		}
+
+		case GLFW_KEY_V:
+			processVoiceCommand("A2 A3", taulell);
+			break;
 
 		case GLFW_KEY_P:
 		{
@@ -697,7 +793,9 @@ void OnKeyDown(GLFWwindow* window, int key, int scancode, int action, int mods) 
 
 		case GLFW_KEY_K:
 		{
-			moveKnight(cavallB1, glm::vec3(1.0f, 2.0f, 0.0f));
+			//moveKnight(cavallB1, glm::vec3(1.0f, 2.0f, 0.0f));
+			glm::vec3 current = cavallB1->getPos();
+			movePieceTo(cavallB1, current + glm::vec3(1.0f, 2.0f, 0.0f));
 			break;
 		}
 
@@ -1089,7 +1187,7 @@ int main(void)
 			}
 		}
 
-
+	// MOURE OBJECTE AMB FLUIDESA __________________________________________________________________________________________________________________________________________________________
 		if (moving && movingObject != nullptr)
 		{
 			moveProgress += deltaTime * moveSpeed;

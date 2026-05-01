@@ -25,6 +25,44 @@ void GameObject::rotate(glm::mat4 rot)
 	m_rot = m_rot * rot;
 }
 
+
+extern std::vector<GameObject*> objects;
+
+GameObject* createObject(COBJModel* model)
+{
+	GameObject* newObject = new GameObject(model);
+	newObject->setId(objects.size());
+
+
+	objects.push_back(newObject);
+	
+	std::cout << "Created object, size now dins el createObject: " << objects.size() << std::endl;
+	
+	return newObject;
+}
+
+void placePiece(GameObject* obj, glm::vec3 pos, bool isKnight) {
+	obj->scale(glm::vec3(0.5f));
+	obj->rotate(glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(1, 0, 0)));
+
+	if (isKnight) {
+		obj->rotate(glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(0, 1, 0)));
+	}
+
+	obj->translate(pos);
+}
+
+
+
+
+
+
+
+
+
+
+
+
 void GameObject::dibuixarObjecte(GLuint shaderID)
 {
 
