@@ -9,6 +9,7 @@
 struct Cell {
     Piece* piece = nullptr;
     GameObject* obj = nullptr;
+    glm::vec3 posicions = glm::vec3(-3.5f, -3.5f, -0.2f);
 };
 
 
