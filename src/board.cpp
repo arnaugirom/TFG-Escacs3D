@@ -9,6 +9,7 @@ Board::Board() {
         for (int j = 0; j < 8; j++) {
             grid[i][j].piece = nullptr;
             grid[i][j].obj = nullptr;
+            grid[i][j].posicions = glm::vec3(-3.5f + i, -3.5f + j, -0.2f);
         }
 }
 

@@ -145,7 +145,7 @@ void processVoiceCommand(std::string command, Board* board)
 
 	for (int i = 0; i < tokens.size() - 1; i++)
 	{
-		if (tokens[i] == "a")
+		if (tokens[i] == "a"|| "b" || "c" || "d" || "e" || "f" || "g" || "h")
 		{
 			if (from == "")
 				from = tokens[i] + " " + tokens[i + 1]; //Aixo fa que quedi a 2
@@ -205,8 +205,11 @@ void processVoiceCommand(std::string command, Board* board)
 
 	if (!obj) return;
 
-	glm::vec3 newPos = glm::vec3(-3.5f, -2.5f + (y2-1), -0.2f);
+	glm::vec3 newPos = taulell->getCell(x2, y2).posicions;
+
 	std::cout << "AIXO ES Y2: " << y2 << std::endl;
+	std::cout << "AIXO ES NEWPOS-2 X: " << newPos.x << std::endl;
+	std::cout << "AIXO ES NEWPOS-2 Y: " << newPos.y << std::endl;
 
 	movePieceTo(obj, newPos);
 	board->movePiece(p, x2, y2);
@@ -348,7 +351,7 @@ void InitGL()
 	placePiece(createObject(mm.getBRei()), glm::vec3(-0.5f, -3.5f, -0.2f));
 	placePiece(createObject(mm.getBAlfil()), glm::vec3(-1.5f, -3.5f, -0.2f));
 	//placePiece(createObject(mm.getBCavall()), glm::vec3(-2.5f, -3.5f, -0.15f), true);
-	placePiece(createObject(mm.getBTorre()), glm::vec3(-3.5f, -3.5f, -0.2f));
+	placePiece(createObject(mm.getBTorre()), glm::vec3(-3.5f, -3.5f, -0.2f)); //A1
 
 	//placePiece(createObject(mm.getBPeo()), glm::vec3(-3.5f, -2.5f, -0.2f));
 	placePiece(createObject(mm.getBPeo()), glm::vec3(-2.5f, -2.5f, -0.2f));
