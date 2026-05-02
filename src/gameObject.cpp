@@ -1,3 +1,4 @@
+//GAMEOBJECT.CPP
 #include "gameObject.h"
 
 GameObject::GameObject(COBJModel* objModel)
@@ -52,6 +53,16 @@ void placePiece(GameObject* obj, glm::vec3 pos, bool isKnight) {
 	obj->translate(pos);
 }
 
+void GameObject::setColor(glm::vec4 color)
+{
+	m_colorBase = color;
+	m_maskColor = true;
+}
+
+void GameObject::clearColor()
+{
+	m_maskColor = false;
+}
 
 
 
