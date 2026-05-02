@@ -1,3 +1,4 @@
+//GAMEOBJECT.H
 #pragma once
 #include "modelManager.h"
 #include <iostream>
@@ -20,6 +21,8 @@ public:
 	glm::mat4 getNormalMatrix();
 	void setPOID(int id) { pickingID = id; }
 
+	void setColor(glm::vec4 color);
+	void clearColor();
 
 	
 

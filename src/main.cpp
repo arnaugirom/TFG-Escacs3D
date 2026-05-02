@@ -40,8 +40,14 @@ VoskModel* model = nullptr;
 VoskRecognizer* rec = nullptr;
 
 
-GameObject* peoA2;
-GameObject* cavallB1;
+
+bool pieceSelected = false;
+std::string selectedSquare = "";
+GameObject* selectedObject = nullptr;
+Piece* selectedPiece = nullptr;
+GameObject* selectionMarker = nullptr;
+
+
 GameObject* movingObject = nullptr;
 std::vector<GameObject*> objects;
 
@@ -67,6 +73,30 @@ void moveKnight(GameObject* knight, glm::vec3 offset)
 	glm::vec3 current = knight->getPos();
 	movePieceTo(knight, current + offset);
 }
+
+
+
+void highlightObject(GameObject* obj, bool highlight)
+{
+	if (!obj) return;
+
+	if (highlight)
+		obj->setColor(glm::vec4(1, 0, 0, 1)); // vermell
+	else
+		obj->clearColor(); // torna a normal
+}
+void moveMarkerTo(glm::vec3 pos)
+{
+	if (!selectionMarker) return;
+
+	glm::vec3 markerPos = pos;
+	markerPos.z += 0.25f; // una mica per sobre
+
+	selectionMarker->translate(markerPos);
+}
+
+
+
 
 std::string normalize(std::string s)
 {
@@ -124,64 +154,66 @@ std::pair<int, int> parsePos(std::string pos)
 
 void processVoiceCommand(std::string command, Board* board)
 {
-	std::cout << "COMMAND RAW: " << command << std::endl;
+	std::cout << "COMMAND: " << command << std::endl;
 
-	std::stringstream ss(command);
-	std::vector<std::string> tokens;
-	std::string word;
+	std::string square = extractSquare(command);
 
-	while (ss >> word)
-		tokens.push_back(word);
-
-	if (tokens.size() < 4)
+	if (square == "")
 	{
-		std::cout << "Comanda incompleta" << std::endl;
+		std::cout << "Comanda no valida" << std::endl;
 		return;
 	}
 
-	// busquem patrons: a X a Y
-	std::string from = "";
-	std::string to = "";
+	auto [x, y] = parsePos(square);
 
-	for (int i = 0; i < tokens.size() - 1; i++)
+	// ----------------------------------------
+	// CAS 1: NO HI HA PEÇA SELECCIONADA
+	// ----------------------------------------
+	if (!pieceSelected)
 	{
-		if (tokens[i] == "a"|| "b" || "c" || "d" || "e" || "f" || "g" || "h")
+		Piece* p = board->get(x, y);
+
+		if (!p)
 		{
-			if (from == "")
-				from = tokens[i] + " " + tokens[i + 1]; //Aixo fa que quedi a 2
-			else
-				to = tokens[i] + " " + tokens[i + 1]; //to = a 3
+			std::cout << "No hi ha pesa a " << square << std::endl;
+			return;
 		}
-	}
 
-	from = extractSquare(from); // from = a2
-	to = extractSquare(to); // to = a3
+		selectedPiece = p;
+		selectedObject = board->getCell(x, y).obj;
+		moveMarkerTo(selectedObject->getPos());
+		selectedSquare = square;
+		pieceSelected = true;
 
-	if (from == "" || to == "")
-	{
-		std::cout << "Comanda no reconeguda" << std::endl;
+		highlightObject(selectedObject, true);
+
+		std::cout << "Pesa seleccionada a " << square << std::endl;
 		return;
 	}
 
-	std::cout << "FROM: " << from << " TO: " << to << std::endl;
+	// ----------------------------------------
+	// CAS 2: JA HI HA PEÇA SELECCIONADA
+	// ----------------------------------------
 
-	auto [x1, y1] = parsePos(from);
-	auto [x2, y2] = parsePos(to);
-
-	Piece* p = board->get(x1, y1);
-
-	std::cout << "DEBUG board get(" << x1 << "," << y1 << ")" << std::endl;
-	auto cell = board->getCell(x1, y1);
-	std::cout << "CELL OBJ: " << cell.obj << std::endl;
-	std::cout << "P ES AQUESTA PESA: " << p << std::endl;
-
-	if (!p)
+	// si repeteixes la mateixa → cancel·la
+	if (square == selectedSquare)
 	{
-		std::cout << "No hi ha pesa a " << from << std::endl;
+		highlightObject(selectedObject, false);
+		selectionMarker->translate(glm::vec3(0, 0, -100)); // amagar-lo
+
+		pieceSelected = false;
+		selectedSquare = "";
+		selectedObject = nullptr;
+		selectedPiece = nullptr;
+
+		std::cout << "Seleccio cancelada" << std::endl;
 		return;
 	}
 
-	std::vector<std::pair<int, int>> moves = p->getMoves();
+	// intent de moviment
+	auto [x2, y2] = parsePos(square);
+
+	std::vector<std::pair<int, int>> moves = selectedPiece->getMoves();
 
 	bool valid = false;
 	for (auto& m : moves)
@@ -199,20 +231,21 @@ void processVoiceCommand(std::string command, Board* board)
 		return;
 	}
 
-	GameObject* obj = board->getCell(x1, y1).obj;
-
-	std::cout << "OBJ PER MOURE: " << obj << std::endl;
-
-	if (!obj) return;
-
 	glm::vec3 newPos = taulell->getCell(x2, y2).posicions;
 
-	std::cout << "AIXO ES Y2: " << y2 << std::endl;
-	std::cout << "AIXO ES NEWPOS-2 X: " << newPos.x << std::endl;
-	std::cout << "AIXO ES NEWPOS-2 Y: " << newPos.y << std::endl;
+	movePieceTo(selectedObject, newPos);
+	board->movePiece(selectedPiece, x2, y2);
 
-	movePieceTo(obj, newPos);
-	board->movePiece(p, x2, y2);
+	// desmarcar
+	highlightObject(selectedObject, false);
+	selectionMarker->translate(glm::vec3(0, 0, -100)); // amagar-lo
+
+	pieceSelected = false;
+	selectedSquare = "";
+	selectedObject = nullptr;
+	selectedPiece = nullptr;
+
+	std::cout << "Moviment fet!" << std::endl;
 }
 
 
@@ -326,6 +359,12 @@ void InitGL()
 
 	std::cout << "Objects size: " << objects.size() << std::endl;
 
+
+	selectionMarker = createObject(mm.getTaulell()); // reutilitzem model simple
+	selectionMarker->scale(glm::vec3(0.2f, 0.2f, 0.1f)); // pla finet
+	selectionMarker->rotate(glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(1, 0, 0)));
+	selectionMarker->setColor(glm::vec4(0, 0, 1, 1)); // blau
+	selectionMarker->setPOID(0); // perquè no interfereixi amb picking
 
 
 	/*
@@ -840,7 +879,7 @@ void OnKeyDown(GLFWwindow* window, int key, int scancode, int action, int mods) 
 			processVoiceCommand("A2 A3", taulell);
 			break;
 
-		case GLFW_KEY_P:
+		/*case GLFW_KEY_P:
 		{
 			glm::vec3 current = peoA2->getPos();
 			movePieceTo(peoA2, current + glm::vec3(0, 1.0f, 0));
@@ -876,7 +915,7 @@ void OnKeyDown(GLFWwindow* window, int key, int scancode, int action, int mods) 
 			movePieceTo(cavallB1, current + glm::vec3(1.0f, 2.0f, 0.0f));
 			break;
 		}
-
+		*/
 
 		default:
 			break;
