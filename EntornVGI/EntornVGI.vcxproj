@@ -31,6 +31,7 @@
     <ClCompile Include="..\src\camara.cpp" />
     <ClCompile Include="..\src\escena.cpp" />
     <ClCompile Include="..\src\gameObject.cpp" />
+    <ClCompile Include="..\src\gameState.cpp" />
     <ClCompile Include="..\src\glut_geometry.cpp" />
     <ClCompile Include="..\src\iluminacion.cpp" />
     <ClCompile Include="..\src\king.cpp" />
@@ -64,6 +65,7 @@
     <ClInclude Include="..\src\constants.h" />
     <ClInclude Include="..\src\escena.h" />
     <ClInclude Include="..\src\gameObject.h" />
+    <ClInclude Include="..\src\gameState.h" />
     <ClInclude Include="..\src\glut_geometry.h" />
     <ClInclude Include="..\src\iluminacion.h" />
     <ClInclude Include="..\src\king.h" />

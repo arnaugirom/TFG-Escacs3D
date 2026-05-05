@@ -24,6 +24,7 @@
 #include "main.h"
 #include "menu.h"
 #include "gameObject.h"
+#include "gameState.h"
 
 #include "vosk_api.h"
 #include <portaudio.h>
@@ -46,6 +47,8 @@ std::string selectedSquare = "";
 GameObject* selectedObject = nullptr;
 Piece* selectedPiece = nullptr;
 GameObject* selectionMarker = nullptr;
+
+
 
 
 GameObject* movingObject = nullptr;
@@ -103,8 +106,19 @@ std::string normalize(std::string s)
 	std::transform(s.begin(), s.end(), s.begin(), ::tolower);
 
 	std::map<std::string, char> mapNums = {
-		{" u",'1'}, {"dos",'2'}, {"tres",'3'}, {"quatre",'4'},
-		{"cinc",'5'}, {"sis",'6'}, {"set",'7'}, {"vuit",'8'}
+		{" u",'1'},
+		{"un", '1'},
+		
+		{"dos",'2'}, {"tres",'3'}, 
+		
+		{"quatre",'4'},
+		{"quatro",'4'},
+
+		{"cinc",'5'}, {"sis",'6'}, {"set",'7'}, 
+
+		{"vuit", '8'},
+		{"vuyt", '8'},
+		{"buit", '8'}
 	};
 
 	for (auto& [word, num] : mapNums)
@@ -152,9 +166,79 @@ std::pair<int, int> parsePos(std::string pos)
 	return { x, y };
 }
 
+void promote(std::string type)
+{
+	if (!promotionPiece || !promotionCell) return;
+
+	int x = promotionPiece->getX();
+	int y = promotionPiece->getY();
+	Color c = promotionPiece->getColor();
+
+	// 🔥 BORRAR peón
+	delete promotionPiece;
+
+	// 🔥 BORRAR modelo antiguo
+	destroyObject(promotionCell->obj);
+
+	Piece* newPiece = nullptr;
+	GameObject* newObj = nullptr;
+
+	if (type == "torre")
+	{
+		newPiece = new Rook(x, y, c);
+		newObj = createObject(mm.getBTorre());
+	}
+	else if (type == "cavall")
+	{
+		newPiece = new Knight(x, y, c);
+		newObj = createObject(mm.getBCavall());
+	}
+	else if (type == "alfil")
+	{
+		newPiece = new Bishop(x, y, c);
+		newObj = createObject(mm.getBAlfil());
+	}
+	else if (type == "reina")
+	{
+		newPiece = new Queen(x, y, c);
+		newObj = createObject(mm.getBReina());
+	}
+
+	// colocar pieza
+	glm::vec3 pos = promotionCell->posicions;
+	placePiece(newObj, pos);
+
+	promotionCell->piece = newPiece;
+	promotionCell->obj = newObj;
+
+	waitingPromotion = false;
+	promotionPiece = nullptr;
+	promotionCell = nullptr;
+
+
+
+	std::cout << "PROMOCIÓ COMPLETADA!" << std::endl;
+}
+
 void processVoiceCommand(std::string command, Board* board)
 {
 	std::cout << "COMMAND: " << command << std::endl;
+
+	if (waitingPromotion)
+	{
+		std::string cmd = command;
+
+		if (cmd.find("torre") != std::string::npos)
+			promote("torre");
+		else if (cmd.find("cavall") != std::string::npos)
+			promote("cavall");
+		else if (cmd.find("alfil") != std::string::npos)
+			promote("alfil");
+		else if (cmd.find("reina") != std::string::npos)
+			promote("reina");
+
+		return;
+	}
 
 	std::string square = extractSquare(command);
 
