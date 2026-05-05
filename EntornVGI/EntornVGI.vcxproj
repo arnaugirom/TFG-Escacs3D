@@ -26,12 +26,15 @@
     <ClCompile Include="..\include\ImGui\imgui_impl_opengl3.cpp" />
     <ClCompile Include="..\include\ImGui\imgui_tables.cpp" />
     <ClCompile Include="..\include\ImGui\imgui_widgets.cpp" />
+    <ClCompile Include="..\src\bishop.cpp" />
     <ClCompile Include="..\src\board.cpp" />
     <ClCompile Include="..\src\camara.cpp" />
     <ClCompile Include="..\src\escena.cpp" />
     <ClCompile Include="..\src\gameObject.cpp" />
     <ClCompile Include="..\src\glut_geometry.cpp" />
     <ClCompile Include="..\src\iluminacion.cpp" />
+    <ClCompile Include="..\src\king.cpp" />
+    <ClCompile Include="..\src\knight.cpp" />
     <ClCompile Include="..\src\main.cpp" />
     <ClCompile Include="..\src\material.cpp" />
     <ClCompile Include="..\src\menu.cpp" />
@@ -41,6 +44,8 @@
     <ClCompile Include="..\src\pickingObjects.cpp" />
     <ClCompile Include="..\src\piece.cpp" />
     <ClCompile Include="..\src\player.cpp" />
+    <ClCompile Include="..\src\queen.cpp" />
+    <ClCompile Include="..\src\rook.cpp" />
     <ClCompile Include="..\src\shader.cpp" />
     <ClCompile Include="..\src\visualitzacio.cpp" />
   </ItemGroup>
@@ -53,6 +58,7 @@
     <ClInclude Include="..\include\ImGui\imgui_internal.h" />
     <ClInclude Include="..\include\ImGui\imstb_rectpack.h" />
     <ClInclude Include="..\include\ImGui\imstb_textedit.h" />
+    <ClInclude Include="..\src\bishop.h" />
     <ClInclude Include="..\src\board.h" />
     <ClInclude Include="..\src\camara.h" />
     <ClInclude Include="..\src\constants.h" />
@@ -60,6 +66,8 @@
     <ClInclude Include="..\src\gameObject.h" />
     <ClInclude Include="..\src\glut_geometry.h" />
     <ClInclude Include="..\src\iluminacion.h" />
+    <ClInclude Include="..\src\king.h" />
+    <ClInclude Include="..\src\knight.h" />
     <ClInclude Include="..\src\main.h" />
     <ClInclude Include="..\src\material.h" />
     <ClInclude Include="..\src\menu.h" />
@@ -71,6 +79,8 @@
     <ClInclude Include="..\src\piece.h" />
     <ClInclude Include="..\src\player.h" />
     <ClInclude Include="..\src\quatern.h" />
+    <ClInclude Include="..\src\queen.h" />
+    <ClInclude Include="..\src\rook.h" />
     <ClInclude Include="..\src\shader.h" />
     <ClInclude Include="..\src\stdafx.h" />
     <ClInclude Include="..\src\visualitzacio.h" />

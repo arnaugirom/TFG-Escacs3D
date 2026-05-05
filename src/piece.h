@@ -1,6 +1,8 @@
 #pragma once
 #include <vector>
 
+class Board;
+
 enum Color { WHITE, BLACK };
 
 class Piece {
@@ -18,6 +20,6 @@ public:
 
     void setPosition(int newX, int newY);
 
-    virtual std::vector<std::pair<int, int>> getMoves() = 0;
+    virtual std::vector<std::pair<int, int>> getMoves(Board* board) = 0;
     virtual char getSymbol() const = 0;
 };

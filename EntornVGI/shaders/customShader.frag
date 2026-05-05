@@ -76,12 +76,13 @@ void main()
 
 	vec3 finalMaterialColor;
 	
-	if (material.diffuse.r == 0 && material.diffuse.g ==0 && material.diffuse.b ==0 && maskColor){
-		finalMaterialColor = baseColor.rgb;
-	} else {
-		finalMaterialColor = material.diffuse.rgb;
-	} 
-
+	if (maskColor)
+	{
+    		finalMaterialColor = baseColor.rgb;
+	} else 
+		{
+    			finalMaterialColor = material.diffuse.rgb;
+		}
 	vec3 result = (ambient + (1.0- shadow) * diffuse) * finalMaterialColor.rgb;
 
 	switch(renderMode)
