@@ -17,6 +17,7 @@
 #include <unordered_set>
 #include "modelManager.h"
 #include "board.h"
+
 // Entorn VGI: OBJECTE OBJ. Include per la definició de l'objecte Obj_OBJ
 
 std::vector<Enemy*> enemies;

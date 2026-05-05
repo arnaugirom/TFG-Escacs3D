@@ -1,7 +1,7 @@
 //BOARD.CPP
 
 #include "board.h"
-
+#include "gameState.h"
 
 
 Board::Board() {
@@ -112,15 +112,33 @@ void Board::movePiece(Piece* p, int newX, int newY) {
     Cell& oldCell = grid[p->getX()][p->getY()];
     Cell& newCell = grid[newX][newY];
 
-    newCell.piece = oldCell.piece;
+    newCell.piece = p;
     newCell.obj = oldCell.obj;
 
     oldCell.piece = nullptr;
     oldCell.obj = nullptr;
 
-    std::cout << "Moving to: " << newX << ", " << newY << std::endl;
-
     p->setPosition(newX, newY);
+
+    // RESET highlights anteriores (IMPORTANTE)
+    for (int i = 0; i < 8; i++)
+        for (int j = 0; j < 8; j++)
+            grid[i][j].highlight = false;
+
+    // PROMOCIÓN
+    if (p->getSymbol() == 'P') {
+        if ((p->getColor() == WHITE && newY == 7) ||
+            (p->getColor() == BLACK && newY == 0))
+        {
+            std::cout << "PEO LISTO PARA PROMOCIÓN!" << std::endl;
+
+            newCell.highlight = true;
+
+            promotionPiece = p;
+            promotionCell = &newCell;
+            waitingPromotion = true;
+        }
+    }
 }
 
 
