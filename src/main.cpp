@@ -85,7 +85,7 @@ void highlightObject(GameObject* obj, bool highlight)
 	else
 		obj->clearColor(); // torna a normal
 }
-void moveMarkerTo(glm::vec3 pos)
+/*void moveMarkerTo(glm::vec3 pos)
 {
 	if (!selectionMarker) return;
 
@@ -94,7 +94,7 @@ void moveMarkerTo(glm::vec3 pos)
 
 	selectionMarker->translate(markerPos);
 }
-
+*/
 
 
 
@@ -181,7 +181,7 @@ void processVoiceCommand(std::string command, Board* board)
 
 		selectedPiece = p;
 		selectedObject = board->getCell(x, y).obj;
-		moveMarkerTo(selectedObject->getPos());
+		//moveMarkerTo(selectedObject->getPos());
 		selectedSquare = square;
 		pieceSelected = true;
 
@@ -199,7 +199,7 @@ void processVoiceCommand(std::string command, Board* board)
 	if (square == selectedSquare)
 	{
 		highlightObject(selectedObject, false);
-		selectionMarker->translate(glm::vec3(0, 0, -100)); // amagar-lo
+		//selectionMarker->translate(glm::vec3(0, 0, -100)); // amagar-lo
 
 		pieceSelected = false;
 		selectedSquare = "";
@@ -213,7 +213,7 @@ void processVoiceCommand(std::string command, Board* board)
 	// intent de moviment
 	auto [x2, y2] = parsePos(square);
 
-	std::vector<std::pair<int, int>> moves = selectedPiece->getMoves();
+	std::vector<std::pair<int, int>> moves = selectedPiece->getMoves(board);
 
 	bool valid = false;
 	for (auto& m : moves)
@@ -238,7 +238,7 @@ void processVoiceCommand(std::string command, Board* board)
 
 	// desmarcar
 	highlightObject(selectedObject, false);
-	selectionMarker->translate(glm::vec3(0, 0, -100)); // amagar-lo
+	//selectionMarker->translate(glm::vec3(0, 0, -100)); // amagar-lo
 
 	pieceSelected = false;
 	selectedSquare = "";
@@ -360,12 +360,13 @@ void InitGL()
 	std::cout << "Objects size: " << objects.size() << std::endl;
 
 
+	/*
 	selectionMarker = createObject(mm.getTaulell()); // reutilitzem model simple
 	selectionMarker->scale(glm::vec3(0.2f, 0.2f, 0.1f)); // pla finet
 	selectionMarker->rotate(glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(1, 0, 0)));
 	selectionMarker->setColor(glm::vec4(0, 0, 1, 1)); // blau
 	selectionMarker->setPOID(0); // perquè no interfereixi amb picking
-
+	*/
 
 	/*
 	//Posar TAULELL

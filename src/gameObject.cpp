@@ -84,7 +84,7 @@ void GameObject::dibuixarObjecte(GLuint shaderID)
 
 	glm::mat4 model(1.0f), normal(1.0f);
 
-
+	
 	glUniform1i(glGetUniformLocation(shaderID, "maskColor"), m_maskColor ? 1 : 0);
 	glUniform4f(glGetUniformLocation(shaderID, "baseColor"), m_colorBase.r, m_colorBase.g, m_colorBase.b, m_colorBase.a);
 

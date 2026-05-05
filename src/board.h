@@ -5,6 +5,11 @@
 #include "modelManager.h"
 #include "gameObject.h"
 #include "pawn.h"
+#include "rook.h"
+#include "knight.h"
+#include "bishop.h"
+#include "queen.h"
+#include "king.h"
 
 struct Cell {
     Piece* piece = nullptr;
@@ -34,7 +39,8 @@ public:
     //GameObject* getObj(int x, int y);
 
     bool isEmpty(int x, int y);
-    //bool hasEnemy(int x, int y, Color myColor);
+    bool hasEnemy(int x, int y, Color myColor);
+    bool inside(int x, int y);
 
     void movePiece(Piece* p, int newX, int newY);
 };
