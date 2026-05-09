@@ -81,6 +81,74 @@ void Board::Inicialitza_Taulell(modelManager& mm)
     grid[4][0].piece = new King(4, 0, WHITE);
     grid[4][0].obj = createObject(mm.getBRei());
     placePiece(grid[4][0].obj, glm::vec3(0.5f, -3.5f, -0.2f));
+
+    // =====================================================
+// ================= PECES NEGRES ======================
+// =====================================================
+
+// =========================
+// ♟ PEONS NEGRES
+// =========================
+    for (int i = 0; i < 8; i++) {
+        Pawn* p = new Pawn(i, 6, BLACK);
+
+        GameObject* obj = createObject(mm.getNPeo());
+        glm::vec3 pos = glm::vec3(-3.5f + i, 2.5f, -0.2f);
+        placePiece(obj, pos);
+
+        grid[i][6].piece = p;
+        grid[i][6].obj = obj;
+    }
+
+    // =========================
+    // ♜ TORRES NEGRES
+    // =========================
+    grid[0][7].piece = new Rook(0, 7, BLACK);
+    grid[7][7].piece = new Rook(7, 7, BLACK);
+
+    grid[0][7].obj = createObject(mm.getNTorre());
+    placePiece(grid[0][7].obj, glm::vec3(-3.5f, 3.5f, -0.2f));
+
+    grid[7][7].obj = createObject(mm.getNTorre());
+    placePiece(grid[7][7].obj, glm::vec3(3.5f, 3.5f, -0.2f));
+
+    // =========================
+    // ♞ CABALLS NEGRES
+    // =========================
+    grid[1][7].piece = new Knight(1, 7, BLACK);
+    grid[6][7].piece = new Knight(6, 7, BLACK);
+
+    grid[1][7].obj = createObject(mm.getNCavall());
+    placePiece(grid[1][7].obj, glm::vec3(-2.5f, 3.5f, -0.2f), true);
+
+    grid[6][7].obj = createObject(mm.getNCavall());
+    placePiece(grid[6][7].obj, glm::vec3(2.5f, 3.5f, -0.2f), true);
+
+    // =========================
+    // ♝ ALFILS NEGRES
+    // =========================
+    grid[2][7].piece = new Bishop(2, 7, BLACK);
+    grid[5][7].piece = new Bishop(5, 7, BLACK);
+
+    grid[2][7].obj = createObject(mm.getNAlfil());
+    placePiece(grid[2][7].obj, glm::vec3(-1.5f, 3.5f, -0.2f));
+
+    grid[5][7].obj = createObject(mm.getNAlfil());
+    placePiece(grid[5][7].obj, glm::vec3(1.5f, 3.5f, -0.2f));
+
+    // =========================
+    // ♛ REINA NEGRA
+    // =========================
+    grid[3][7].piece = new Queen(3, 7, BLACK);
+    grid[3][7].obj = createObject(mm.getNReina());
+    placePiece(grid[3][7].obj, glm::vec3(-0.5f, 3.5f, -0.2f));
+
+    // =========================
+    // ♚ REI NEGRE
+    // =========================
+    grid[4][7].piece = new King(4, 7, BLACK);
+    grid[4][7].obj = createObject(mm.getNRei());
+    placePiece(grid[4][7].obj, glm::vec3(0.5f, 3.5f, -0.2f));
 }
 
 
