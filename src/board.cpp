@@ -112,6 +112,47 @@ void Board::movePiece(Piece* p, int newX, int newY) {
     Cell& oldCell = grid[p->getX()][p->getY()];
     Cell& newCell = grid[newX][newY];
 
+    if (p->getSymbol() == 'K')
+    {
+        int oldX = p->getX();
+
+        // ENROC CURT
+        if (newX == 6 && oldX == 4)
+        {
+            Cell& rookOld = grid[7][newY];
+            Cell& rookNew = grid[5][newY];
+
+            rookNew.piece = rookOld.piece;
+            rookNew.obj = rookOld.obj;
+
+            rookOld.piece = nullptr;
+            rookOld.obj = nullptr;
+
+            rookNew.piece->setPosition(5, newY);
+
+            glm::vec3 pos = rookNew.posicions;
+            rookNew.obj->translate(pos);
+        }
+
+        // ENROC LLARG
+        else if (newX == 2 && oldX == 4)
+        {
+            Cell& rookOld = grid[0][newY];
+            Cell& rookNew = grid[3][newY];
+
+            rookNew.piece = rookOld.piece;
+            rookNew.obj = rookOld.obj;
+
+            rookOld.piece = nullptr;
+            rookOld.obj = nullptr;
+
+            rookNew.piece->setPosition(3, newY);
+
+            glm::vec3 pos = rookNew.posicions;
+            rookNew.obj->translate(pos);
+        }
+    }
+
     newCell.piece = p;
     newCell.obj = oldCell.obj;
 
@@ -119,6 +160,7 @@ void Board::movePiece(Piece* p, int newX, int newY) {
     oldCell.obj = nullptr;
 
     p->setPosition(newX, newY);
+    p->setMoved(true);
 
     // RESET highlights anteriores (IMPORTANTE)
     for (int i = 0; i < 8; i++)

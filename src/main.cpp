@@ -105,6 +105,15 @@ std::string normalize(std::string s)
 {
 	std::transform(s.begin(), s.end(), s.begin(), ::tolower);
 
+	std::map<std::string, std::string> mapLetters = {
+		//C
+		{"ser", "c"},
+		{ "fer", "c" },
+
+		//D
+		{"de", "d"}
+	};
+
 	std::map<std::string, char> mapNums = {
 		{" u",'1'},
 		{"un", '1'},
@@ -116,10 +125,19 @@ std::string normalize(std::string s)
 
 		{"cinc",'5'}, {"sis",'6'}, {"set",'7'}, 
 
-		{"vuit", '8'},
+		{"vuit", '8'},	
 		{"vuyt", '8'},
 		{"buit", '8'}
 	};
+
+	for (auto& [word, letter] : mapLetters)
+	{
+		size_t pos;
+		while ((pos = s.find(word)) != std::string::npos)
+		{
+			s.replace(pos, word.length(), letter);
+		}
+	}
 
 	for (auto& [word, num] : mapNums)
 	{
@@ -174,10 +192,10 @@ void promote(std::string type)
 	int y = promotionPiece->getY();
 	Color c = promotionPiece->getColor();
 
-	// 🔥 BORRAR peón
+	// BORRAR peón
 	delete promotionPiece;
 
-	// 🔥 BORRAR modelo antiguo
+	// BORRAR modelo antiguo
 	destroyObject(promotionCell->obj);
 
 	Piece* newPiece = nullptr;
