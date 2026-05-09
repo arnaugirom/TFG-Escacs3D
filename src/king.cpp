@@ -21,6 +21,34 @@ std::vector<std::pair<int, int>> King::getMoves(Board* board)
                 moves.push_back({ nx, ny });
         }
 
+    if (!hasMoved())
+    {
+        // ENROC CURT
+        Piece* rook = board->get(7, y);
+
+        if (rook &&
+            rook->getSymbol() == 'R' &&
+            !rook->hasMoved() &&
+            board->isEmpty(5, y) &&
+            board->isEmpty(6, y))
+        {
+            moves.push_back({ 6, y });
+        }
+
+        // ENROC LLARG
+        rook = board->get(0, y);
+
+        if (rook &&
+            rook->getSymbol() == 'R' &&
+            !rook->hasMoved() &&
+            board->isEmpty(1, y) &&
+            board->isEmpty(2, y) &&
+            board->isEmpty(3, y))
+        {
+            moves.push_back({ 2, y });
+        }
+    }
+
     return moves;
 }
 
